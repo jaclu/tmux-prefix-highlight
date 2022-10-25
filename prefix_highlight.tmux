@@ -2,6 +2,17 @@
 
 set -e
 
+#
+#  I use an env var TMUX_BIN to point at the current tmux, defined in my
+#  tmux.conf, in order to pick the version matching the server running.
+#  This is needed when checking backwards compatibility with various versions.
+#  If not found, it is set to whatever is in path, so should have no negative
+#  impact. In all calls to tmux I use $TMUX_BIN instead in the rest of this
+#  plugin.
+#
+[ -z "$TMUX_BIN" ] && TMUX_BIN="tmux"
+
+
 # Place holder for status left/right
 place_holder="\#{prefix_highlight}"
 
@@ -22,7 +33,7 @@ empty_attr_config='@prefix_highlight_empty_attr'
 empty_has_affixes='@prefix_highlight_empty_has_affixes'
 
 tmux_option() {
-    local -r value=$(tmux show-option -gqv "$1")
+    local -r value=$($TMUX_BIN show-option -gqv "$1")
     local -r default="$2"
 
     if [ -n "$value" ]; then
@@ -95,10 +106,10 @@ main() {
     local -r highlight="#{?client_prefix,$prefix_mode,$fallback}#[default]"
 
     local -r status_left_value="$(tmux_option "status-left")"
-    tmux set-option -gq "status-left" "${status_left_value/$place_holder/$highlight}"
+    $TMUX_BIN set-option -gq "status-left" "${status_left_value/$place_holder/$highlight}"
 
     local -r status_right_value="$(tmux_option "status-right")"
-    tmux set-option -gq "status-right" "${status_right_value/$place_holder/$highlight}"
+    $TMUX_BIN set-option -gq "status-right" "${status_right_value/$place_holder/$highlight}"
 }
 
 main

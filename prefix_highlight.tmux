@@ -81,8 +81,15 @@ main() {
     local -r copy_highlight="$(format_style "${copy_attr:+default,$copy_attr}")"
     local -r copy_mode="$copy_highlight$output_prefix$copy_prompt$output_suffix"
 
-    local -r sync_highlight="$(format_style "${sync_attr:+default,$sync_attr}")"
-    local -r sync_mode="$sync_highlight$output_prefix$sync_prompt$output_suffix"
+
+    if [[ -n "$($TMUX_BIN display -p '#{synchronize-panes}')" ]]; then
+        local -r sync_highlight="$(format_style "${sync_attr:+default,$sync_attr}")"
+        local -r sync_mode="$sync_highlight$output_prefix$sync_prompt$output_suffix"
+    else
+        # Prior to tmux 2.0 synchronize-panes is not available, so disable
+        # sync mode
+        local -r show_sync_mode="off"
+    fi
 
     local -r empty_highlight="$(format_style "${empty_attr:+default,$empty_attr}")"
     if [[ "on" = "$empty_has_affixes" ]]; then
@@ -98,7 +105,7 @@ main() {
             local -r fallback="#{?pane_in_mode,$copy_mode,$empty_mode}"
         fi
     elif [[ "on" = "$show_sync_mode" ]]; then
-        local -r fallback="#{?synchronize-panes,$sync_mode,$empty_mode}"
+        local -r fallback="#{?synchronize-panes,$sync_mode,$empty_mode}" # 2.0
     else
         local -r fallback="$empty_mode"
     fi

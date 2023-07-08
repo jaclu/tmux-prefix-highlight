@@ -1,6 +1,13 @@
 # Tmux prefix highlight
 
-**NOTE:** This project is no longer in active development. Bugs and 
+## This fork
+
+synchronize-panes is forcefully disabled for tmux < 2.0
+since the feature does not exist prior to that version.
+Thereby making this plugin compatible down to 1.8
+
+
+**NOTE:** This project is no longer in active development. Bugs and
 features requests won't get implemented by the project maintainers.
 We still welcome discussions and community pull requests, though.
 
